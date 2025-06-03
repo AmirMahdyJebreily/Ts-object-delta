@@ -1,0 +1,25 @@
+{
+  "name": "ts-object-delta",
+  "version": "0.0.1",
+  "description": "A Tool for get the deltas/patch of an object in ts",
+  "main": "./test/main.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmirMahdyJebreily/Ts-object-delta.git"
+  },
+  "keywords": [
+    "deltas"
+  ],
+  "author": "CodeAgha (Amir Mahdy Jebreily)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AmirMahdyJebreily/Ts-object-delta/issues"
+  },
+  "homepage": "https://github.com/AmirMahdyJebreily/Ts-object-delta#readme",
+  "dependencies": {
+    "typescript": "^5.8.3"
+  }
+}
