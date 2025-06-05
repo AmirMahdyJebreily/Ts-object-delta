@@ -17,25 +17,22 @@ type Q = {
 };
 
 describe('mergeDelta', () => {
-  // 1. تست به‌روزرسانی مقادیر Primitive در سطح اول
   test('should update top-level primitive fields and leave others intact', () => {
     const src: { a: number; b: number } = { a: 1, b: 2 };
     const patch: DeepDelta<{ a: number; b: number }> = { a: 10 };
     mergeDelta(src as any, patch as any);
     expect(src.a).toBe(10);
-    expect(src.b).toBe(2); // باید بدون تغییر باقی بماند
+    expect(src.b).toBe(2);
   });
 
-  // 2. تست به‌روزرسانی آبجکت‌های Nested
   test('should update nested object fields and not overwrite siblings', () => {
     const src: { c: { d: number; e: number } } = { c: { d: 3, e: 4 } };
     const patch: DeepDelta<{ c: { d: number } }> = { c: { d: 7 } };
     mergeDelta(src, patch as any);
     expect(src.c.d).toBe(7);
-    expect(src.c.e).toBe(4); // فیلد e بدون تغییر باقی بماند
+    expect(src.c.e).toBe(4);
   });
 
-  // 3. تست به‌روزرسانی اعضای داخل آرایه‌های Primitive
   test('should update elements of a primitive array in place', () => {
     const src: { list: number[] } = { list: [1, 2, 3] };
     const patch: DeepDelta<{ list: Array<number | undefined> }> = {
@@ -45,7 +42,6 @@ describe('mergeDelta', () => {
     expect(src.list).toEqual([1, 20, 3]);
   });
 
-  // 4. تست به‌روزرسانی اعضای داخل آرایه‌های Object
   test('should update nested object properties inside an array', () => {
     const src: { items: Array<{ v: number }> } = {
       items: [
@@ -63,11 +59,10 @@ describe('mergeDelta', () => {
     };
     mergeDelta(src as any, patch as any);
     expect(src.items[0].v).toBe(10);
-    expect(src.items[1].v).toBe(2);  // بدون تغییر
+    expect(src.items[1].v).toBe(2);
     expect(src.items[2].v).toBe(30);
   });
 
-  // 5. تست به‌روزرسانی آبجکت‌های Nested پیچیده (مانند مثال Q)
   test('should merge a nested Q structure including array of W correctly', () => {
     const src: Q = {
       a: 1,
@@ -98,36 +93,40 @@ describe('mergeDelta', () => {
     };
     mergeDelta(src, patch as any);
     expect(src.a).toBe(1000);
-    // b بدون تغییر باقی بماند
     expect(src.b).toBe(2);
 
-    // اعضای f: 
     expect(src.c.e.f[0].r).toBe('bye1');
-    expect(src.c.e.f[1].r).toBe('hello2'); // undefined در patch → بدون تغییر
+    expect(src.c.e.f[1].r).toBe('hello2');
     expect(src.c.e.f[2].r).toBe('bye3');
 
-    // سایر مسیرها بدون تغییر
     expect(src.c.d).toBe(3);
     expect(src.c.e.k).toBe(true);
   });
 
-  // 6. تست حذف یک فیلد (Deletion) زمانی که patch تعیین شده برابر undefined باشد
-  test('should delete a top-level field when patch value is explicitly undefined', () => {
+  test('should delete a top-level field when patch value is explicitly DELETE symbol', () => {
     const src: { a?: number; b?: number } = { a: 5, b: 6 };
     const patch: DeepDelta<{ a: number | undefined; b: number }> = { a: DELETE };
     mergeDelta(src as any, patch as any);
     expect(src.a).toBeUndefined();
-    expect('a' in src).toBe(false); // کلید a حذف شده باشد
+    expect('a' in src).toBe(false);
     expect(src.b).toBe(6);
   });
 
-  // 7. تست حذف یک فیلد Nested
   test('should delete a nested field when patch value is undefined', () => {
     const src: { x: { y?: number; z: number } } = { x: { y: 10, z: 20 } };
     const patch: DeepDelta<{ x: { y: number | undefined } }> = { x: { y: DELETE } };
     mergeDelta(src as any, patch as any);
     expect(src.x.y).toBeUndefined();
-    expect('y' in src.x).toBe(false); // کلید y حذف شده باشد
+    expect('y' in src.x).toBe(false);
+    expect(src.x.z).toBe(20);
+  });
+
+  test('should delete a nested object when patch value is DELETE symbol', () => {
+    const src: { x: { y: { k: number }; z: number } } = { x: { y: { k: 50 }, z: 20 } };
+    const patch: DeepDelta<{ x: { y: { k: number } } }> = { x: { y: DELETE } };
+    mergeDelta(src as any, patch as any);
+    expect(src.x.y).toBeUndefined();
+    expect('y' in src.x).toBe(false);
     expect(src.x.z).toBe(20);
   });
 });
