@@ -1,4 +1,4 @@
-import { DeepDelta } from "./types"
+import { DeepDelta } from "../types/types"
 
 export function mergeDelta<T extends object>(src: T, delta: DeepDelta<T>): void {
     for (const key in delta) {

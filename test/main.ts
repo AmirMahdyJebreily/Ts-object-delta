@@ -1,5 +1,5 @@
-import { DeepDelta } from "../lib/types"
-import { mergeDelta } from "../lib/merge"
+import { DeepDelta } from "../src/types/types"
+import { mergeDelta } from "../src/core/merge"
 
 type W = {
     r: string
