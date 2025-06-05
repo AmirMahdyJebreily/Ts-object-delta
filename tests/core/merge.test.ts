@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { mergeDelta } from '../../src/core/merge';
-import { DeepDelta } from '../../src/types/types';
+import { DeepDelta, DELETE } from '../../src/types/types';
 
 type W = { r: string };
 type Q = {
@@ -114,7 +114,7 @@ describe('mergeDelta', () => {
   // 6. تست حذف یک فیلد (Deletion) زمانی که patch تعیین شده برابر undefined باشد
   test('should delete a top-level field when patch value is explicitly undefined', () => {
     const src: { a?: number; b?: number } = { a: 5, b: 6 };
-    const patch: DeepDelta<{ a: number | undefined; b: number }> = { a: undefined };
+    const patch: DeepDelta<{ a: number | undefined; b: number }> = { a: DELETE };
     mergeDelta(src as any, patch as any);
     expect(src.a).toBeUndefined();
     expect('a' in src).toBe(false); // کلید a حذف شده باشد
@@ -124,7 +124,7 @@ describe('mergeDelta', () => {
   // 7. تست حذف یک فیلد Nested
   test('should delete a nested field when patch value is undefined', () => {
     const src: { x: { y?: number; z: number } } = { x: { y: 10, z: 20 } };
-    const patch: DeepDelta<{ x: { y: number | undefined } }> = { x: { y: undefined } };
+    const patch: DeepDelta<{ x: { y: number | undefined } }> = { x: { y: DELETE } };
     mergeDelta(src as any, patch as any);
     expect(src.x.y).toBeUndefined();
     expect('y' in src.x).toBe(false); // کلید y حذف شده باشد

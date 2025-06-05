@@ -1,4 +1,4 @@
-import { DeepDelta } from "../types/types"
+import { DeepDelta, DELETE } from "../types/types"
 
 export function mergeDelta<T extends object>(src: T, delta: DeepDelta<T>): void {
     for (const key in delta) {
@@ -6,7 +6,13 @@ export function mergeDelta<T extends object>(src: T, delta: DeepDelta<T>): void 
         const deltaValue = delta[k];
         const srcValue = src[k];
 
+        if (deltaValue === DELETE) {
+            delete src[k];
+            continue;
+        }
+
         if (deltaValue === undefined) continue;
+
 
         if (Array.isArray(deltaValue)) {
             if (!Array.isArray(srcValue)) {
